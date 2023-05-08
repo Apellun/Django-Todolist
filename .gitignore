@@ -1,0 +1,5 @@
+venv
+.gitignore
+todolist/db.sqlite3
+todolist/db.sqlite3-journal
+todolist/.env
