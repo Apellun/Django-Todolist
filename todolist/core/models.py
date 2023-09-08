@@ -8,7 +8,7 @@ class User(AbstractUser):
 
     username = models.CharField(max_length=30, unique=True)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs): #TODO this bitch messes up with the superuser
 
         self.set_password(self.password)
         
