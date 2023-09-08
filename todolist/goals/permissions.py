@@ -1,75 +1,78 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+from goals.models import BoardParticipant, Board
 
-from goals.models import BoardParticipant, Role, Board, GoalCategory
 
-
-class GoalCategoryEditPermissions(BasePermission):
+class ObjectPermissions(BasePermission):
+    def get_participant(self, request, board):
+        return BoardParticipant.objects.get(
+                user=request.user, board=board)
+    
+    def has_board_editing_permissions(self, request, board):
+        participant = self.get_participant(request, board)
+        return participant.role in (1, 2)
+    
+    def is_owner(self, request, obj):
+        return request.user == obj.user
+                
     def has_object_permission(self, request, view, obj):
-        if not request.user.is_authenticated:
-            return False
+        pass
+    
+
+class ObjectCreatePermissions(ObjectPermissions):
+    def has_object_permission(self, request, view, obj):
+        return super().has_board_editing_permissions(request, view, obj)
+    
+    
+class GoalCategoryCreatePermissions(ObjectCreatePermissions):
+    def has_object_permission(self, request, view, obj):
+        return super().has_board_editing_permissions(request, view, obj)
+    
+
+class GoalCreatePermissions(ObjectCreatePermissions):
+    def has_object_permission(self, request, view, obj):
+        return super().has_board_editing_permissions(request, obj.board)
+    
+
+class CommentCreatePermissions(ObjectCreatePermissions):
+    def has_object_permission(self, request, view, obj):
+        return super().has_board_editing_permissions(request, view, obj)
         
-        if request.method == "DELETE":
-            if obj.user != request.user:
-                    return False
-            
+        
+class ObjectEditPermissions(ObjectPermissions):
+    def has_object_permission(self, request, view, obj):
+        return super().is_owner(request, obj)
+    
+
+class GoalPermissions(ObjectPermissions):
+    def has_object_permission(self, request, view, obj):
         if request.method not in SAFE_METHODS:
-            board = Board.objects.get(goalcategory=obj)
-            participant = BoardParticipant.objects.get(board=board, user=request.user)
-            if participant.role not in (1, 2):
-                return False
-        
-        
-        return True
+            return super().is_owner(request, obj)
+        board = Board.objects.get(goalcategory=obj.category)
+        participant = super().get_participant(request, board)
+        return participant is not None
     
-
-class CommentEditPermissions(BasePermission): #TODO
+    
+class GoalCategoryPermissions(ObjectPermissions):
     def has_object_permission(self, request, view, obj):
-        if not request.user.is_authenticated:
-            return False
-        
         if request.method not in SAFE_METHODS:
-            if request.user != obj.user:
-                return False
-        
-        return True
-    
+            return super().is_owner(request, obj)
+        board = Board.objects.get(goalcategory=obj)
+        participant = super().get_participant(request, board)
+        return participant is not None
 
-class GoalEditPermissions(BasePermission):
+
+class GoalCommentPermissions(ObjectPermissions):
     def has_object_permission(self, request, view, obj):
-        if not request.user.is_authenticated:
-            return False
-        
         if request.method not in SAFE_METHODS:
-            board = Board.objects.get(goalcategory__goal=obj)
-            participant = BoardParticipant.objects.get(board=board.id, user=request.user)
-    
-            if participant.role in (1, 2):
-                return True
-            return False
-        
-        return True
-    
-
-class CategoryCreatePermission(BasePermission):#TODO
-    def has_object_permission(self, request, view, obj):
-        if not request.user.is_authenticated:
-            return False
-        
-        participant = BoardParticipant.objects.filter(board=request.board, user=request.user)
-        
-        if participant.role in (1, 2):
-            return True
-        return False
+            return super().is_owner(request, obj)
+        board = Board.objects.get(goal__category=obj)
+        participant = super().get_participant(request, board)
+        return participant is not None
                     
     
-class BoardPermissions(BasePermission):
+class BoardPermissions(ObjectPermissions):  
     def has_object_permission(self, request, view, obj):
-        if not request.user.is_authenticated:
-            return False
+        participant = super().get_participant(request, obj)
         if request.method in SAFE_METHODS:
-            return BoardParticipant.objects.filter(
-                user=request.user, board=obj
-            ).exists()
-        return BoardParticipant.objects.filter(
-            user=request.user, board=obj, role=Role.owner
-        ).exists()
+            return participant is not None
+        return participant.role == 1

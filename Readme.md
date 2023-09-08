@@ -1,0 +1,2 @@
+Put refreshes the board data, it requires the title. Through put method you can also add and delte participants, as well as change their roles on the board.
+BoardView put is for adding participants: {"user": id, "role": int}

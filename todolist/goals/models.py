@@ -1,10 +1,9 @@
 from django.db import models
 from django.utils import timezone
-
 from core.models import User
 
 
-class DatesModelMixin(models.Model):
+class DatesModelMixin(models.Model): 
     class Meta:
         abstract = True
 
@@ -43,13 +42,13 @@ class BoardParticipant(DatesModelMixin):
         Board,
         verbose_name="Board",
         on_delete=models.PROTECT,
-        related_name="boardparticipant",
+        related_name="boardparticipants",
     )
     user = models.ForeignKey(
         User,
         verbose_name="User",
         on_delete=models.PROTECT,
-        related_name="boardparticipant",
+        related_name="boardparticipants",
     )
     role = models.PositiveSmallIntegerField(
         verbose_name="Role", choices=Role.choices, default=Role.owner
@@ -64,10 +63,8 @@ class GoalCategory(DatesModelMixin):
     board = models.ForeignKey(
         Board,
         verbose_name="Board",
-        on_delete=models.PROTECT,
-        #related_name="board"
+        on_delete=models.PROTECT
     )
-    
     title = models.CharField(verbose_name="Title", max_length=255)
     user = models.ForeignKey(User, verbose_name="Author", on_delete=models.PROTECT)
     is_deleted = models.BooleanField(verbose_name="Deleted", default=False)
@@ -102,7 +99,6 @@ class Goal(DatesModelMixin):
         GoalCategory,
         verbose_name="Category",
         on_delete=models.PROTECT,
-        #related_name="category",
     )
     user = models.ForeignKey(User, verbose_name="Author", on_delete=models.PROTECT)
     is_deleted = models.BooleanField(verbose_name="Deleted", default=False)

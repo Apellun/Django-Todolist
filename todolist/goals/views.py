@@ -3,10 +3,11 @@ from rest_framework import permissions, filters
 from rest_framework.pagination import LimitOffsetPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db import transaction
-from django.http import HttpResponse
-
-from goals.permissions import BoardPermissions, GoalCategoryEditPermissions, GoalEditPermissions, CommentEditPermissions
-from goals.models import GoalCategory, Goal, Status, GoalComment, Board, BoardParticipant, Role
+from goals.permissions import (BoardPermissions, GoalCategoryCreatePermissions,
+                               GoalCreatePermissions, CommentCreatePermissions,
+                               GoalPermissions, GoalCategoryPermissions,
+                               GoalCommentPermissions)
+from goals.models import GoalCategory, Goal, Status, GoalComment, Board
 from goals.serializers import (
     GoalCategoryCreateSerializer, GoalCategorySerializer,
     GoalCreateSerializer, GoalSerializer,
@@ -19,14 +20,8 @@ from goals.filters import GoalDateFilter
 
 class GoalCategoryCreateView(CreateAPIView):
     model = GoalCategory
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, GoalCategoryCreatePermissions]
     serializer_class = GoalCategoryCreateSerializer
-    
-    def create(self, request, *args, **kwargs):
-        participant = BoardParticipant.objects.get(board=self.request.data['board'], user=self.request.user)
-        if participant is None or participant.role not in (Role.owner, Role.editor):
-            return HttpResponse("You can't create goal categories in the boards you are not the owner or the editor of.")
-        return super().create(request, *args, **kwargs)
 
 
 class GoalCategoryListView(ListAPIView):
@@ -34,19 +29,17 @@ class GoalCategoryListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = GoalCategorySerializer
     pagination_class = LimitOffsetPagination
-
     filter_backends = [
         filters.OrderingFilter,
         filters.SearchFilter,
     ]
-    
     ordering_fields = ["title", "created", "board"]
     ordering = ["title"]
     search_fields = ["title", "board"]
 
     def get_queryset(self):
         return GoalCategory.objects.filter(
-            board__boardparticipant__user=self.request.user,
+            board__boardparticipants__user=self.request.user,
             is_deleted=False
             )
 
@@ -54,18 +47,18 @@ class GoalCategoryListView(ListAPIView):
 class GoalCategoryView(RetrieveUpdateDestroyAPIView):
     model = GoalCategory
     serializer_class = GoalCategorySerializer
-    permission_classes = [GoalCategoryEditPermissions]
+    permission_classes = [permissions.IsAuthenticated, GoalCategoryPermissions]
 
     def get_queryset(self):
         return GoalCategory.objects.filter(
-            board__boardparticipant__user=self.request.user,
+            board__boardparticipants__user=self.request.user,
             is_deleted=False
         )
 
-    def perform_destroy(self, instance): #TODO: doesn't work
+    def perform_destroy(self, instance):
         instance.is_deleted = True
         instance.save()
-        for goal in Goal.objects.filter(user=self.request.user, category=instance.id):
+        for goal in Goal.objects.filter(category=instance):
             goal.status = Status.archived
             goal.save()
         return instance
@@ -74,14 +67,8 @@ class GoalCategoryView(RetrieveUpdateDestroyAPIView):
 
 class GoalCreateView(CreateAPIView):
     model = Goal
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, GoalCreatePermissions]
     serializer_class = GoalCreateSerializer
-    
-    def create(self, request, *args, **kwargs):
-        participant = BoardParticipant.objects.get(board__goalcategory=self.request.data['category'], user=self.request.user)
-        if participant is None or participant.role not in (Role.owner, Role.editor):
-            return HttpResponse("You can't create goals in the categories you are not the owner or the editor of.")
-        return super().create(request, *args, **kwargs)
 
 
 class GoalListView(ListAPIView):
@@ -96,7 +83,7 @@ class GoalListView(ListAPIView):
     filterset_class = GoalDateFilter
 
     def get_queryset(self):
-        boards = Board.objects.filter(boardparticipant__user=self.request.user)
+        boards = Board.objects.filter(boardparticipants__user=self.request.user)
         return Goal.objects.filter(
             category__board__in=boards,
             is_deleted=False
@@ -106,14 +93,14 @@ class GoalListView(ListAPIView):
 class GoalView(RetrieveUpdateDestroyAPIView):
     model = Goal
     serializer_class = GoalSerializer
-    permission_classes = [GoalEditPermissions]
+    permission_classes = [permissions.IsAuthenticated, GoalPermissions]
 
     def get_queryset(self):
-        boards = Board.objects.filter(boardparticipant__user=self.request.user)
+        boards = Board.objects.filter(boardparticipants__user=self.request.user)
         return Goal.objects.filter(
             category__board__in=boards,
             is_deleted=False
-            ) #TODO: maybe add to the others
+            )
 
     def perform_destroy(self, instance):
         instance.is_deleted = True
@@ -125,19 +112,10 @@ class GoalView(RetrieveUpdateDestroyAPIView):
 
 class GoalCommentCreateView(CreateAPIView):
     model = GoalComment
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CommentCreatePermissions]
     serializer_class = GoalCommentCreateSerializer
     
-    def create(self, request, *args, **kwargs): #TODO: see if it can be done better
-        board = Board.objects.get(goalcategory__goal=request.data['goal'])
-        participant = BoardParticipant.objects.get(board=board, user=request.user)
-        
-        if participant.role not in (Role.owner, Role.editor):
-            return HttpResponse("You can't create comments in the goal you are not the owner or the editor of.")
-        return super().create(request, *args, **kwargs)
     
-    
-
 class GoalCommentListView(ListAPIView):
     model = GoalComment
     permission_classes = [permissions.IsAuthenticated]
@@ -145,19 +123,18 @@ class GoalCommentListView(ListAPIView):
     pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
-        boards = Board.objects.filter(boardparticipant__user=self.request.user)
+        boards = Board.objects.filter(boardparticipants__user=self.request.user)
         return GoalComment.objects.filter(goal__category__board__in=boards)
     
 
 class GoalCommentView(RetrieveUpdateDestroyAPIView):
     model = GoalComment
     serializer_class = GoalCommentSerializer
-    permission_classes = [CommentEditPermissions]
+    permission_classes = [permissions.IsAuthenticated, GoalCommentPermissions]
 
     def get_queryset(self):
-        boards = Board.objects.filter(boardparticipant__user=self.request.user)
+        boards = Board.objects.filter(boardparticipants__user=self.request.user)
         return GoalComment.objects.filter(goal__category__board__in=boards)
-    
 
 #BoardViews
 
@@ -169,20 +146,21 @@ class BoardCreateView(CreateAPIView):
 
 class BoardView(RetrieveUpdateDestroyAPIView):
     model = Board
-    permission_classes = [BoardPermissions]
+    permission_classes = [permissions.IsAuthenticated, BoardPermissions]
     serializer_class = BoardSerializer
 
     def get_queryset(self):
-        # Обратите внимание на фильтрацию – она идет через participants
-        return Board.objects.filter(boardparticipant__user=self.request.user, is_deleted=False)
+        return Board.objects.filter(
+            boardparticipants__user=self.request.user,
+            is_deleted=False)
         
-    def perform_destroy(self, instance: Board):#TODO: check
-        # При удалении доски помечаем ее как is_deleted,
-        # «удаляем» категории, обновляем статус целей
+    def perform_destroy(self, instance: Board):
         with transaction.atomic():
             instance.is_deleted = True
             instance.save()
-            instance.categories.update(is_deleted=True)
+            GoalCategory.objects.filter(board=instance).update(
+                is_deleted=True
+            )
             Goal.objects.filter(category__board=instance).update(
                 status=Status.archived
             )
@@ -191,7 +169,7 @@ class BoardView(RetrieveUpdateDestroyAPIView):
 
 class BoardListView(ListAPIView):
     model = Board
-    permission_classes = [BoardPermissions]
+    permission_classes = [permissions.IsAuthenticated,]
     serializer_class = BoardListSerializer
     pagination_class = LimitOffsetPagination
     ordering = ["title"]
@@ -199,6 +177,6 @@ class BoardListView(ListAPIView):
 
     def get_queryset(self):
         return Board.objects.filter(
-            boardparticipant__user=self.request.user,
+            boardparticipants__user=self.request.user,
             is_deleted=False
             )
