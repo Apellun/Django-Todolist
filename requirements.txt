@@ -1,1 +1,9 @@
-Django==3.2.6
+dataclass-wizard==0.22.2
+Django==4.2.1
+django-filter==23.2
+django-rest-swagger==2.2.0
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.2.2
+drf-spectacular==0.26.4
+python-dotenv==1.0.0
+pytz==2023.3

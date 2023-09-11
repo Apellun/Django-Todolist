@@ -8,7 +8,7 @@ from core.serializers import UserSerializer
 class BoardParticipantSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(
     required=True, choices=Role.choices
-    )#TODO: repr with words
+    )
     user = serializers.SlugRelatedField(
         slug_field="id", queryset=User.objects.all()
     )
@@ -116,7 +116,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
 
     def validate_category(self, value):
         if value.is_deleted:
-            raise serializers.ValidationError("not allowed in a deleted category")
+            raise serializers.ValidationError("Not allowed in a deleted category")
         return value
 
 
@@ -154,5 +154,5 @@ class GoalCommentSerializer(serializers.ModelSerializer):
 
     def validate_goal(self, value):
         if value.user != self.context["request"].user:
-            raise serializers.ValidationError("you are not the author of the comment")
+            raise serializers.ValidationError("You are not the author of the comment")
         return value

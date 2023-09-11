@@ -16,7 +16,6 @@ class ObjectPermissions(BasePermission):
                 
     def has_object_permission(self, request, view, obj):
         pass
-    
 
 class ObjectCreatePermissions(ObjectPermissions):
     def has_object_permission(self, request, view, obj):
@@ -30,17 +29,12 @@ class GoalCategoryCreatePermissions(ObjectCreatePermissions):
 
 class GoalCreatePermissions(ObjectCreatePermissions):
     def has_object_permission(self, request, view, obj):
-        return super().has_board_editing_permissions(request, obj.board)
+        return super().has_board_editing_permissions(request, view, obj.board)
     
 
 class CommentCreatePermissions(ObjectCreatePermissions):
     def has_object_permission(self, request, view, obj):
         return super().has_board_editing_permissions(request, view, obj)
-        
-        
-class ObjectEditPermissions(ObjectPermissions):
-    def has_object_permission(self, request, view, obj):
-        return super().is_owner(request, obj)
     
 
 class GoalPermissions(ObjectPermissions):

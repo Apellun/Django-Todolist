@@ -8,10 +8,10 @@ class User(AbstractUser):
 
     username = models.CharField(max_length=30, unique=True)
 
-    def save(self, *args, **kwargs): #TODO this bitch messes up the superuser
+    def save(self, *args, **kwargs):
         if not self.is_staff:
             self.set_password(self.password)
-            super().save()
+        super().save()
         
     class Meta:
         verbose_name = 'User'

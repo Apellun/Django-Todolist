@@ -6,13 +6,6 @@ from core.models import User
 from core.serializers import UserSerializer, UserAuthSerializer
 
 
-method_decorator(csrf_exempt, name="dispatch")
-class UserListView(ListAPIView):
-    queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
-    serializer_class = UserSerializer
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class UserDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
@@ -23,7 +16,6 @@ class UserDetailView(RetrieveAPIView):
 
 
 class UserCreateView(CreateAPIView):
-    queryset = User.objects.all()
     serializer_class = UserAuthSerializer   
 
 
