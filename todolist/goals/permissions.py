@@ -17,6 +17,7 @@ class ObjectPermissions(BasePermission):
     def has_object_permission(self, request, view, obj):
         pass
 
+
 class ObjectCreatePermissions(ObjectPermissions):
     def has_object_permission(self, request, view, obj):
         return super().has_board_editing_permissions(request, view, obj)

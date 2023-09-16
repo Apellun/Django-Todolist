@@ -2,6 +2,8 @@
 
 This was a final project from the Python course. 
 
+<p><b>Technologies:</b> Django, Telegram Bot API, Docker. </p>
+
 <p><b>To launch:</b>
 
 Download the folder onto your computer, fill in the .env file.
