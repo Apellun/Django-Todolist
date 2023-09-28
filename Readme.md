@@ -2,7 +2,8 @@
 
 # Todolist API
 
-This was a final project from the Python course. 
+This was a final project from the Python course. It is a Django API that allows users to create goals, and also categories and boards for goals. Users can invite other users to their boards and give them one of two roles: reader or editor.
+Users also can view their goals and create new goals with a Telegram bot.
 
 <p><b>Technologies:</b> Django, Telegram Bot API, Docker. </p>
 
@@ -105,7 +106,8 @@ The code I came up with is rather cumbersome, but it's still the best solution I
 
 # API для списка дел
 
-Это был финальный проект курса по Python.
+Это был финальный проект курса по Python. Это API на Django для сервиса, в котором пользователи могут создавать цели, а также доски и категории для целей. Пользователи могут приглашать других пользователей на свои доски с одной из двух ролей: читатель или редактор.
+Также пользователи могут смотреть свой список целей и создавать новые цели через Telegram бота.
 
 <p><b>Технологии:</b> Django, Telegram Bot API, Docker. </p>
 
