@@ -7,6 +7,8 @@ Users also can view their goals and create new goals with a Telegram bot.
 
 <p><b>Technologies:</b> Django, Telegram Bot API, Docker. </p>
 
+<i>Note: The requirements.txt file is so extensive because while recently updating Django I encountered an error while launching the API. So just in case I have updated all of the packages and put them all into requirements, to make sure that the API runs correctly.</i>
+
 <p><b>To launch:</b>
 
 Download the repository to your computer, fill in the example.env file and rename it into .env.
@@ -110,6 +112,8 @@ The code I came up with is rather cumbersome, but it's still the best solution I
 Также пользователи могут смотреть свой список целей и создавать новые цели через Telegram бота.
 
 <p><b>Технологии:</b> Django, Telegram Bot API, Docker. </p>
+
+<i>Замечание: requirements.txt такой длинный, потому что недавно я обновляла Django и столкнулась с ошибкой при запуске API (несовместимость с каким-то другим пакетом, каким конкретно — я не выяснила). На всякий случай, я обновила все пакеты и сложила их в requirements, чтобы API точно везде запускался.</i>
 
 <p><b>Как запустить:</b>
 
