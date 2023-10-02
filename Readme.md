@@ -104,6 +104,10 @@ I had to figure out how to recognize that the Telegram user had initiated a goal
 The best decision I found so far is to store the info on the process in the database (as a separate TgUser field "goal_creating_status" with 5 possible statuses), as well as the info for the new goal (as an object of a separate model tied to the TgUser object, TgUserGoal). When the process of creating the goal has been completed or stopped, the TgUserGoal object is deleted from the database, and the TgUser object's goal_creating_status is set back to 0.
 The code I came up with is rather cumbersome, but it's still the best solution I managed to come up with. I know that there are other solutions in the pre-maid libraries for bots, and I am planning to use one of them in another project. But in this one, the task was to write all of the bot logic by myself.
 
+### Future enhancements
+
+Currently, I am working on a docker-compose file with a properly implemented NGINX for this project. I also plan to add third-party authentication for the API.
+
 <i>Here starts the Readme in Russian.</i>
 
 # API для списка дел
@@ -206,3 +210,7 @@ CRUD для пользователей — по адресу api/core/:
 Лучшее решение, которое я придумала на нынешний момент — хранить все в базе данных. Я создала отдельное поле для модели TgUser, "goal_creating_status", с пятью возможными значениями: 0 по умолчанию и от 1 до 4 для каждого шага создания цели. А также новую модель TgUserGoal, объекты которой привязываются к TgUser и содержат информацию о доске/категории/названии для новой цели.
 Когда новая цель создана или процесс создания остановлен пользователем, объект TgUserGoal удаляется из базы, а значение goal_creating_status для TgUser снова принимает значение 0.
 Решение получилось громоздким, но лучше я пока не придумала. Я знаю, что в готовых библиотеках для ботов есть другие решения и планирую использовать одну из них в другом проекте, но в этой работе задача была написать всю логику бота самостоятельно.
+
+### Будущие улучшения
+
+На данный момент я работаю над docker-compose с правильно подключенным NGINX для этого проекта. Также в будущем я планирую добавить в API аутентификацию через сторонние сервисы.
