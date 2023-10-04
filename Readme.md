@@ -5,9 +5,7 @@
 This was a final project from the Python course. It is a Django API that allows users to create goals, and also categories and boards for goals. Users can invite other users to their boards and give them one of two roles: reader or editor.
 Users also can view their goals and create new goals with a Telegram bot.
 
-<p><b>Technologies:</b> Django, Telegram Bot API, Docker. </p>
-
-<i>Note: The requirements.txt file is so extensive because while recently updating Django I encountered an error while launching the API. So just in case I have updated all of the packages and put them all into requirements, to make sure that the API runs correctly.</i>
+<p><b>Technologies:</b> Django, Telegram Bot API.</p>
 
 <p><b>To launch:</b>
 
@@ -115,9 +113,7 @@ Currently, I am working on a docker-compose file with a properly implemented NGI
 Это был финальный проект курса по Python. Это API на Django для сервиса, в котором пользователи могут создавать цели, а также доски и категории для целей. Пользователи могут приглашать других пользователей на свои доски с одной из двух ролей: читатель или редактор.
 Также пользователи могут смотреть свой список целей и создавать новые цели через Telegram бота.
 
-<p><b>Технологии:</b> Django, Telegram Bot API, Docker. </p>
-
-<i>Замечание: requirements.txt такой длинный, потому что недавно я обновляла Django и столкнулась с ошибкой при запуске API (несовместимость с каким-то другим пакетом, каким конкретно — я не выяснила). На всякий случай, я обновила все пакеты и сложила их в requirements, чтобы API точно везде запускался.</i>
+<p><b>Технологии:</b> Django, Telegram Bot API.</p>
 
 <p><b>Как запустить:</b>
 
