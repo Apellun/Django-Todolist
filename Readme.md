@@ -2,10 +2,9 @@
 
 # Todolist API
 
-This was a final project from the Python course. It is a Django API that allows users to create goals, and also categories and boards for goals. Users can invite other users to their boards and give them one of two roles: reader or editor.
-Users also can view their goals and create new goals with a Telegram bot.
+Django REST API for a to-do list service with a Telegram bot. Provides CRUD for users, goals, comments, goal categories, and boards. Users can invite other users to participate in boards in one of the two roles: as a reader or as an editor. Also, users can view their goals and create new goals with the bot.
 
-<p><b>Technologies:</b> Django, Telegram Bot API.</p>
+API uses an SQLite database in the development mode and a PostgreSQL database in the production mode. Has authorization and authentication with JWT, and also Swagger documentation.
 
 <p><b>To launch:</b>
 
@@ -110,10 +109,9 @@ Currently, I am working on a docker-compose file with a properly implemented NGI
 
 # API для списка дел
 
-Это был финальный проект курса по Python. Это API на Django для сервиса, в котором пользователи могут создавать цели, а также доски и категории для целей. Пользователи могут приглашать других пользователей на свои доски с одной из двух ролей: читатель или редактор.
-Также пользователи могут смотреть свой список целей и создавать новые цели через Telegram бота.
+REST API на Django для сервиса-списка дел с телеграм-ботом. Предоставляет CRUD для пользователей, целей, комментариев, категорий целей и досок. Пользователи могут приглашать других пользователей на доску в одной из двух ролей: читателя или редактора.
 
-<p><b>Технологии:</b> Django, Telegram Bot API.</p>
+API использует базу данных SQLite в режиме разработки и PostgreSQL в режиме продакшена. Авторизация и аутентификация происходит с помощью JWT. К API подключена документация Swagger.
 
 <p><b>Как запустить:</b>
 
